@@ -1,0 +1,23 @@
+ print           hashtable
+delete    Death    Note
+     add  Death Note
+print hashtable
+add   Death     Note  
+update add   Death   Note<SEP>  Genre  <SEP> Anime
+add   	Can  	You 		Handle? 
+add  Another Test
+       print hashtable
+delete Death                     Note
+
+add Death Note
+add
+delete Another Test
+update add   Death   Note<SEP>  Genre  <SEP> Animation
+update add Death Note<SEP>Format<SEP>Series
+add  Fullmetal          Alchemist
+       add Spirited    Away     
+add death note
+add     Castle in the Sky
+print hashtable
+update add Re0<SEP>Good
+update add Death Note<SEP>Genre<SEP>Intellect
