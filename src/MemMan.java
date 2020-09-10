@@ -50,7 +50,7 @@ public class MemMan {
             while (sc.hasNext()) {
                 String cmd = sc.nextLine();
                 CommandParser parsedCmd = new CommandParser(cmd);
-                String operation = parsedCmd.getOperation();
+                String operation = parsedCmd.getOperation().toLowerCase();
                 String value = parsedCmd.getValue();
                 
                 String output;
@@ -58,13 +58,10 @@ public class MemMan {
                 
                 switch (operation) {
                     case "add": // add a key to name space
-                        // in case if added value is in form like
-                        // something<SEP>something
-                        // String[] addArgs = value.split("<SEP>");
                         
-                        if (hT.add(value, value)) {
-                            output = "|" + value;
-                            tail = "| has been added to the Name database.";
+                        if (hT.add(value)) {
+                            output = "|" + value + "| ";
+                            tail = "has been added to the Name database.";
                             System.out.println(output + tail);
                         } 
                         else {
@@ -74,7 +71,9 @@ public class MemMan {
                             System.out.println(output + tail);
                         }
                         break;
+                        
                     case "delete": // delete a key from name space
+                        
                         if (hT.delete(value)) {
                             output = "|" + value + "| ";
                             tail = "has been deleted from the Name database.";
@@ -87,11 +86,14 @@ public class MemMan {
                             System.out.println(output + tail);
                         }
                         break;
+                        
                     case "update": // update a key
+                        
                         String updateOperation = parsedCmd.getUpdateOperation();
                         output = hT.update(updateOperation, value) + "\n";
                         System.out.print(output);
                         break;
+                        
                     case "print":
                         hT.print(value);
                         break;

@@ -1,4 +1,3 @@
-import java.io.IOException;
 import student.TestCase;
 
 
@@ -23,7 +22,7 @@ public class HashTest extends TestCase {
         String output;
         String ans;
         
-        h.add("Death Note", "Death Note");
+        h.add("Death Note");
         output = h.update("add", "Death Note<SEP>Genre<SEP>Anime");
         ans = "Updated Record: |Death Note<SEP>Genre<SEP>Anime|";
         assertEquals(ans, output);
@@ -41,38 +40,5 @@ public class HashTest extends TestCase {
         boolean flag = h.delete("Death Note");
         boolean deleteAns = true;
         assertEquals(flag, deleteAns);
-    }
-    
-    /**
-     * @throws IOException 
-     * 
-     */
-    public void testAddAndDelete() throws IOException {
-        Hash h = new Hash(10);
-        
-        boolean output;
-        String key;
-        
-//        key = "2";
-//        output = h.add(key, key);
-//        assertEquals(output, true);
-//        
-//        key = "22";
-//        output = h.add(key, key);
-//        assertEquals(output, true);
-//        
-//        key = "222";
-//        output = h.add(key, key);
-//        assertEquals(output, true);
-//        
-//        key = "2222";
-//        output = h.add(key, key);
-//        assertEquals(output, true);
-        
-        key = "2     2";
-        output = h.add(key, key);
-        assertEquals(output, true);
-        
-        h.print("hashtable");
     }
 }

@@ -65,10 +65,12 @@ public class Hash {
 
         // rehash whole table
         for (int i = 0; i < size; i++) {
-            if (keys[i] != null) {
-                int newH = h(keys[i], size * 2);
+            if (vals[i] != null) {
+                String key = vals[i].split("<SEP>")[0];
+                int newH = h(key, size * 2);
                 int j = 0;
-                while (newKeyArray[newH] != null) {
+                
+                while (newValArray[newH] != null) {
                     newH = (newH + j * j) % (size * 2);
                     j += 1;
                 }
@@ -94,7 +96,7 @@ public class Hash {
      *          success or not of this operation
      * @throws IOException
      */
-    public boolean add(String key, String value) 
+    public boolean add(String key) 
         throws IOException 
     {
         
@@ -118,7 +120,7 @@ public class Hash {
         }
         
         keys[hVal] = key;
-        vals[hVal] = value;
+        vals[hVal] = key;
         records += 1;
         
         // successful add
@@ -240,7 +242,7 @@ public class Hash {
             System.out.print("Total records: " + records + "\n");
         } 
         else {
-            //System.out.println("");
+            System.out.println("");
         }
     }
 
