@@ -163,23 +163,27 @@ public class Hash {
      * @return
      *          return updated record or failure message
      */         
-    public String update(String operation, String value) {
-        if (operation.equals("add")) {
-            String[] fields = value.split("<SEP>");
-            for (int i = 0; i < fields.length; i++) {
-                fields[i] = fields[i].trim();
-            }
+    public String update(String operation, String value) 
+    {    
+        String[] fields = value.split("<SEP>");
+        // Canonical Form
+        for (int i = 0; i < fields.length; i++) {
+            fields[i] = fields[i].trim();
+        }
 
-            String key = fields[0];
-            
-            // search key
-            int hVal = h(key, size);
-            int index = searchKey(key, hVal); 
-            if (index == -1) {
-                return "|" + key + "| not updated" + 
-                    " because it does not exist in the Name database.";
-            }
-            
+        String key = fields[0];
+        
+        // search key
+        int hVal = h(key, size);
+        int index = searchKey(key, hVal); 
+        
+        // key not found
+        if (index == -1) {
+            return "|" + key + "| not updated" + 
+                " because it does not exist in the Name database.";
+        }
+        
+        if (operation.equals("add")) {
             // original fields
             String[] existFields = vals[index].split("<SEP>");
             // fields not in value
