@@ -161,7 +161,6 @@ public class MemPool {
      */
     private int expandPool(int length) {
         int i = maxN + 1;
-        maxN += 1;
         
         // expand memory list
         MemBlock[] newList = new MemBlock[i + 1];
@@ -186,7 +185,7 @@ public class MemPool {
         String output = "Memory pool expanded to be " + size + " bytes.";
         System.out.println(output);
         
-        return i - 1;
+        return i;
     }
     
     /**
@@ -208,7 +207,11 @@ public class MemPool {
         if (i > maxN) {
             // expand memory pool
             
-            i = expandPool(length);
+            maxN = expandPool(length);
+            i = k;
+            while (i <= maxN && memList[i] == null) {
+                i++;
+            }
         }
         
         MemBlock m = listRemove(i);

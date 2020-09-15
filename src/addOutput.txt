@@ -1,2 +1,14 @@
 |1111| has been added to the Name database.
 Updated Record: |1111<SEP>2222<SEP>333|
+Updated Record: |1111<SEP>2222<SEP>3333|
+Memory pool expanded to be 64 bytes.
+Updated Record: |1111<SEP>2222<SEP>3333<SEP>22<SEP>1212|
+Updated Record: |1111<SEP>22<SEP>1212<SEP>2222<SEP>3|
+Memory pool expanded to be 128 bytes.
+|22| has been added to the Name database.
+Updated Record: |22<SEP>1<SEP>2|
+Updated Record: |22<SEP>1<SEP>2<SEP>3<SEP>3|
+Updated Record: |22<SEP>1<SEP>2<SEP>3<SEP>4|
+Updated Record: |22<SEP>1<SEP>2<SEP>3<SEP>4<SEP>5<SEP>5|
+Updated Record: |22<SEP>3<SEP>4<SEP>5<SEP>5<SEP>1<SEP>11|
+Updated Record: |1111<SEP>22<SEP>1212|
