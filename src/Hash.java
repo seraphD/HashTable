@@ -63,7 +63,7 @@ public class Hash {
         while (array[newPos] != null) {
             
             HashEntry item = array[newPos];
-            if (item.isActive && item.getKey().equals(key)) {
+            if (item.isActive() && item.getKey().equals(key)) {
                 return newPos;
             }
             
@@ -88,7 +88,7 @@ public class Hash {
         
         // rehash
         for (int i = 0; i < size; i++) {
-            if (array[i] != null && array[i].isActive) {
+            if (array[i] != null && array[i].isActive()) {
                 int pos = h(array[i].getKey(), size * 2);
                 int j = 0;
                 
@@ -121,7 +121,7 @@ public class Hash {
      */
     public Handle delete(String key, int index) {
        
-        array[index].isActive = false;
+        array[index].setActive(false);
         String output = "|" + key + "| has been deleted";
         output += " from the Name database.";
         System.out.println(output);
@@ -146,12 +146,13 @@ public class Hash {
     public void add(Handle handle, String key, int pos) {
         if (records >= size / 2) {
             expandHash();
+            pos = h(key, size);
         }
         
         int i = 0;
         int newPos = pos;
         
-        while (array[newPos] != null && array[newPos].isActive) {
+        while (array[newPos] != null && array[newPos].isActive()) {
             i += 1;
             newPos = (pos + i * i) % size;
             
@@ -178,7 +179,7 @@ public class Hash {
     public void print() {
         // print key
         for (int i = 0; i < size; i++) {
-            if (array[i] != null && array[i].isActive) {
+            if (array[i] != null && array[i].isActive()) {
                 System.out.println("|" + array[i].getKey() + "| " + i);
             }
         }
@@ -259,7 +260,7 @@ class HashEntry {
     /**  if isActive == none 
      *   the position is a deleted element
      */
-    public boolean isActive;
+    public boolean active;
     
     /**
      * @return key of this element
@@ -278,7 +279,7 @@ class HashEntry {
     public HashEntry(Handle handle, String key) {
         super();
         this.key = key;
-        this.isActive = true;
+        this.active = true;
         this.handle = handle;
     }
     
@@ -296,5 +297,22 @@ class HashEntry {
      */
     public void setHandle(Handle handle) {
         this.handle = handle;
+    }
+    
+    /**
+     * active getter
+     * @return if record is active
+     */
+    public boolean isActive() {
+        return active;
+    }
+    
+    /**
+     * active setter
+     * @param active
+     *          is record is active
+     */
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

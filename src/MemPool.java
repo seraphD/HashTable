@@ -11,7 +11,7 @@ public class MemPool {
     
     /**
      * use Math.ceil to convert k to integer
-     * get exponent of a integer on 2
+     * get exponent of an integer of 2
      * @param n
      *      an integer 
      * @return
@@ -70,11 +70,18 @@ public class MemPool {
             MemBlock p = memList[pos];
             // insert a memory block
             // ordered by address
-            while (p.next != null && p.next.getAddr() < m.getAddr()) {
-                p = p.next;
+            
+            if (p.getAddr() > m.getAddr()) {
+                m.setNext(p);
+                memList[pos] = m;
+                return;
             }
-            m.next = p.next;
-            p.next = m;
+            
+            while (p.getNext() != null && p.getNext().getAddr() < m.getAddr()) {
+                p = p.getNext();
+            }
+            m.setNext(p.getNext());
+            p.setNext(m);
         }
     }
     
@@ -88,8 +95,8 @@ public class MemPool {
     private MemBlock listRemove(int pos) {
         MemBlock p = memList[pos];
         
-        memList[pos] = memList[pos].next;
-        p.next = null;
+        memList[pos] = memList[pos].getNext();
+        p.setNext(null);
         
         return p;
     }
@@ -108,10 +115,10 @@ public class MemPool {
             return listRemove(pos);
         } 
         else {
-            while (p.next != null) {
-                if (p.next == m) {
-                    p.next = m.next;
-                    m.next = null;
+            while (p.getNext() != null) {
+                if (p.getNext() == m) {
+                    p.setNext(m.getNext());
+                    m.setNext(null);
                     return m;
                 }
             }
@@ -204,7 +211,7 @@ public class MemPool {
             i++;
         }
         
-        if (i > maxN) {
+        while (i > maxN) {
             // expand memory pool
             
             maxN = expandPool(length);
@@ -319,8 +326,9 @@ public class MemPool {
                 
                 while (p != null) {
                     output += " " + p.getAddr();
-                    p = p.next;
+                    p = p.getNext();
                 }
+                output += " ";
             }
         }
         
@@ -347,7 +355,7 @@ class MemBlock {
     private int size;
     // used in memory list to access next
     // memory block of same size
-    public MemBlock next;
+    private MemBlock next;
     
     /**
      *  constructor of memory block
@@ -376,5 +384,22 @@ class MemBlock {
      */
     public int getAddr() {
         return addr;
+    }
+    
+    /**
+     * next getter
+     * @return next memory block
+     */
+    public MemBlock getNext() {
+        return next;
+    }
+    
+    /**
+     * next setter
+     * @param m 
+     *      next memory block
+     */
+    public void setNext(MemBlock m) {
+        this.next = m;
     }
 }

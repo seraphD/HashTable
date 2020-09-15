@@ -1,0 +1,29 @@
+8: 0 
+|111| has been added to the Name database.
+Memory pool expanded to be 16 bytes.
+|44444| has been added to the Name database.
+|111| has been deleted from the Name database.
+|44444| has been deleted from the Name database.
+16: 0 
+|0| has been added to the Name database.
+|1| has been added to the Name database.
+|2| has been added to the Name database.
+|3| has been added to the Name database.
+|4| has been added to the Name database.
+Name hash table size doubled to 20 slots.
+|5| has been added to the Name database.
+|6| has been added to the Name database.
+|7| has been added to the Name database.
+|8| has been added to the Name database.
+|9| has been added to the Name database.
+2: 10 4: 12 
+|1| has been deleted from the Name database.
+|3| has been deleted from the Name database.
+|5| not deleted because it does not exist in the Name database.
+|7| has been deleted from the Name database.
+|9| has been deleted from the Name database.
+1: 1 3 7 9 2: 10 4: 12 
+|0| has been deleted from the Name database.
+|2| has been deleted from the Name database.
+|4| has been deleted from the Name database.
+1: 4 7 9 2: 10 4: 0 12 

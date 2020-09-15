@@ -11,3 +11,17 @@ update add 22<SEP>5<SEP>5
 update add 22<SEP>1<SEP>11
 
 update delete 1111<SEP>2222
+
+update add 22<SEP> 1 <SEP> 2
+add 33
+update add 1111<SEP>33M<SEP>1234
+update add 1111<SEP>33M<SEP>1234
+update add 1111<SEP>22<SEP> 1212
+update   add 1111<SEP>4<SEP>  55
+update add         1111<SEP>22<SEP>1213
+update add 22<SEP> 1  1 <SEP>2 2 
+add 22
+delete 22
+add 22
+
+update add 22<SEP>1<SEP>2 2 2  
