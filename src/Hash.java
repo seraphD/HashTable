@@ -6,7 +6,6 @@
  */
 //package MemoryStorage;
 
-import java.io.IOException;
 
 /**
  * @author Lihui Zhang/lihuiz
@@ -14,10 +13,9 @@ import java.io.IOException;
  * @version 2.0
  */
 public class Hash {
-    private String[] keys;
-    private String[] vals;
     private int size;
     private int records;
+    private HashEntry[] array;
 
      /**
      * Create a new Hash object.
@@ -25,229 +23,188 @@ public class Hash {
      */
     public Hash(int size)
     {
-        keys = new String[size];
-        vals = new String[size];
+        array = new HashEntry[size];
         records = 0;
         this.size = size;
     }
     
     /**
+     * @return
+     *      size of the hash table
+     */
+    public int getSize() {
+        return size;
+    }
+    
+    /**
+     * @param pos
+     *         position of the record
+     * @return
+     *      record in hash table
+     */
+    public HashEntry getRecord(int pos) {
+        return array[pos];
+    }
+    
+    /**
+     * search a key in hash table
      * @param key
      *          object of search
-     * @param index 
+     * @param pos 
      *          initial slot of key
      * @return
-     *          index of the key return -1 if key not exist
+     *          index of the key 
+     *          return -1 if key not exist
      */
-    public int searchKey(String key, int index) {
+    public int searchKey(String key, int pos) {
         int i = 0;
+        int newPos = pos;
         
-        while (keys[index] != null || vals[index] != null) {
-           
-            if (keys[index] != null && keys[index].equals(key)) {
-                return index;
+        while (array[newPos] != null) {
+            
+            HashEntry item = array[newPos];
+            if (item.isActive && item.getKey().equals(key)) {
+                return newPos;
             }
             
-            index = (index + i * i) % size;
             i += 1;
+            
+            if (i > size) {
+                return -1;
+            }
+            
+            newPos = (pos + i * i) % size;
         }
         
         return -1;
     }
-   
+    
     /**
-     * @throws IOException
+     * expand hash table to double size
      */
-    private void expandHash() throws IOException {
-        // double the size of table
-        String[] newKeyArray = new String[size * 2];
-        String[] newValArray = new String[size * 2];
-
-        // rehash whole table
+    public void expandHash() {
+        // new array
+        HashEntry[] newArray = new HashEntry[size * 2];
+        
+        // rehash
         for (int i = 0; i < size; i++) {
-            if (vals[i] != null) {
-                String key = vals[i].split("<SEP>")[0];
-                int newH = h(key, size * 2);
+            if (array[i] != null && array[i].isActive) {
+                int pos = h(array[i].getKey(), size * 2);
                 int j = 0;
                 
-                while (newValArray[newH] != null) {
-                    newH = (newH + j * j) % (size * 2);
+                // find an empty slot
+                // there will not be tomb stone in new array
+                int newPos = pos;
+                while (newArray[newPos] != null) {
                     j += 1;
+                    newPos = (pos + j * j) % (size * 2);
                 }
-                
-                newKeyArray[newH] = keys[i];
-                newValArray[newH] = vals[i];
+                newArray[newPos] = array[i];
             }
         }
         
-        keys = newKeyArray;
-        vals = newValArray;
+        array = newArray;
         size *= 2;
-        System.out.println(
-            "Name hash table size doubled to " + size + " slots.");
+        
+        String output = "Name hash table size doubled to " + size + " slots.";
+        System.out.println(output);
     }
     
+    
     /**
+     * delete a key from name database
      * @param key
-     *          the key used to calculate hash value
-     * @param value
-     *          stored value
-     * @return
-     *          success or not of this operation
-     * @throws IOException
+     *          record key
+     * @param index 
+     *          position of the record
+     * @return handle of the string
      */
-    public boolean add(String key) 
-        throws IOException 
-    {
+    public Handle delete(String key, int index) {
+       
+        array[index].isActive = false;
+        String output = "|" + key + "| has been deleted";
+        output += " from the Name database.";
+        System.out.println(output);
+        records -= 1;
         
-        // expand hash table if records greater than half of size
+        Handle handle = array[index].getHandle();
+        array[index].setHandle(null);
+        
+        return handle;
+        
+    }
+    
+   
+    /**
+     * @param handle
+     *          memory block position handle
+     * @param key 
+     *          inserted key
+     * @param pos
+     *          hash value
+     */
+    public void add(Handle handle, String key, int pos) {
         if (records >= size / 2) {
             expandHash();
         }
         
-        // search key in hash table return false if key exist
-        int hVal = h(key, size);
-        if (searchKey(key, hVal) > -1) {
-            return false;
-        }
-        
-        // quadratic probing
-        // add key to a empty slot or tombStone
         int i = 0;
-        while (keys[hVal] != null || keys[hVal] != null) {
-            hVal = (hVal + i * i) % size;
+        int newPos = pos;
+        
+        while (array[newPos] != null && array[newPos].isActive) {
             i += 1;
+            newPos = (pos + i * i) % size;
+            
+            if (i > size) {
+                expandHash();
+                
+                i = 0;
+                pos = h(key, size);
+                newPos = pos;
+            }
         }
         
-        keys[hVal] = key;
-        vals[hVal] = key;
+        array[newPos] = new HashEntry(handle, key);
         records += 1;
         
-        // successful add
-        return true;
+        String output = "|" + key + "| ";
+        output += "has been added to the Name database.";
+        System.out.println(output);
     }
     
     /**
-     * only delete the key in keys array
-     * if key[h] == null and value[h] != null then here is a tombStone
-     * @param key
-     *          the key of deleted value
-     * @return
-     *          success or not of the deletion
+     * print hash table
      */
-    public boolean delete(String key) {
-        int hVal = h(key, size);
-        int index = searchKey(key, hVal);
-        
-        if (index == -1) {
-            // key not found
-            return false;
-        } 
-        else {
-            // delete key
-            // keep value in vals to make a tombStone 
-            keys[index] = null;
-            records -= 1;
-            
-            return true;
+    public void print() {
+        // print key
+        for (int i = 0; i < size; i++) {
+            if (array[i] != null && array[i].isActive) {
+                System.out.println("|" + array[i].getKey() + "| " + i);
+            }
         }
+        
+        // print total records
+        System.out.println("Total records: " + records);
     }
-
+    
     /**
-     * @param operation
-     *          update operation type include add and delete
-     * @param value
-     *          it consists of key and fields
-     *          in add case. Find field that not in exist fields and add them
-     *          in delete case. delete specified field in value
-     * @return
-     *          return updated record or failure message
-     */         
-    public String update(String operation, String value) 
-    {    
-        String[] fields = value.split("<SEP>");
-        // Canonical Form
-        for (int i = 0; i < fields.length; i++) {
-            fields[i] = fields[i].trim();
-        }
-
-        String key = fields[0];
-        
-        // search key
-        int hVal = h(key, size);
-        int index = searchKey(key, hVal); 
-        
-        // key not found
-        if (index == -1) {
-            return "|" + key + "| not updated" + 
-                " because it does not exist in the Name database.";
-        }
-        
-        if (operation.equals("add")) {
-            // original fields
-            String[] existFields = vals[index].split("<SEP>");
-            // fields not in value
-            String[] fieldNeed = new String[existFields.length];
-            // mark insert position of fieldNeed array
-            int i = 0;
-            
-            // free old blocks
-            for (int j = 1; j < existFields.length; j++) {
-                boolean repeat = false;
-                
-                for (int k = 1; k < fields.length; k++) {
-                    if (existFields[j].equals(fields[k])) {
-                        repeat = true;
-                        break;
-                    }
-                }
-                    
-                if (!repeat) {
-                    fieldNeed[i] = existFields[j];
-                    i++;
-                }
-            }
-            
-            // new value
-            String newRecord = key;
-            for (int j = 0; j < i; j++) {
-                newRecord += "<SEP>" + fieldNeed[j];
-            }
-            
-            // start from index 1 because fields[0] is key
-            for (int j = 1; j < fields.length; j++) {
-                newRecord += "<SEP>" + fields[j];
-            }
-                
-            vals[index] = newRecord;
-            // return updated record
-            return "Updated Record: |" + vals[index] + "|";
-        } 
-        else {
-            // update delete haven't been coded yet
-            // it's a mock return
-            return "";
-        }
-    }
-        
-        
-    /**
-     * @param type
-     *          specify printing hash table or blocks
-     * @throws IOException
+     * @param pos
+     *      position of the record
+     * @return handle of the record
      */
-    public void print(String type) throws IOException {
-        if (type.equals("hashtable")) {
-            for (int i = 0; i < size; i++) {
-                if (keys[i] != null) {
-                    System.out.print("|" + keys[i] + "| " + i + "\n");
-                }
-            }
-            System.out.print("Total records: " + records + "\n");
-        } 
-        else {
-            System.out.println("");
-        }
+    public Handle getHandle(int pos) {
+        return array[pos].getHandle();
+    }
+    
+    /**
+     * set new handle to the record
+     * @param pos
+     *          index in the hash table
+     * @param handle
+     *          new handle in the memory
+     */
+    public void setHandle(int pos, Handle handle) {
+        array[pos].setHandle(handle);
     }
 
     /**
@@ -287,5 +244,57 @@ public class Hash {
         }
 
         return (int)(Math.abs(sum) % m);
+    }
+}
+
+/**
+ * element for hash table
+ * @author Lihui Zhang/lihuiz
+ * @author Haosu Wang/whaosu
+ * @version 2.0
+ */
+class HashEntry {
+    private Handle handle;
+    private String key;
+    /**  if isActive == none 
+     *   the position is a deleted element
+     */
+    public boolean isActive;
+    
+    /**
+     * @return key of this element
+     */
+    public String getKey() {
+        return key;
+    }
+    
+    /**
+     *  constructor of elements
+     *  @param handle
+     *          handle of memory
+     *  @param key
+     *          key in the hash table
+     */
+    public HashEntry(Handle handle, String key) {
+        super();
+        this.key = key;
+        this.isActive = true;
+        this.handle = handle;
+    }
+    
+    /**
+     * @return handle of the memory
+     */
+    public Handle getHandle() {
+        return handle;
+    }
+    
+    /**
+     * update handle of the element
+     * @param handle 
+     *          new handle that will be set
+     */
+    public void setHandle(Handle handle) {
+        this.handle = handle;
     }
 }

@@ -35,79 +35,178 @@ import java.util.Scanner;
 // letter of this restriction.
 
 public class MemMan {
+    
+    
     /**
      * @param args
      *     Command line parameters
+     * @throws FileNotFoundException 
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         // This is the main file for the program.
+        
+        // create memory pool
+        int poolSize = Integer.parseInt(args[0]);
+        MemPool memPool = new MemPool(poolSize);
+        
+        // create hash table
         int initialHashSize = Integer.parseInt(args[1]);
         String inputFile = args[2];
         Hash hT = new Hash(initialHashSize);
-        try {
-            Scanner sc = new Scanner(new File(inputFile));
+        
+        Scanner sc = new Scanner(new File(inputFile));
+        
+        while (sc.hasNext()) {
+            String cmd = sc.nextLine();
+            CommandParser parsedCmd = new CommandParser(cmd);
+
+            // add / delete / update
+            String operation = parsedCmd.getOperation().toLowerCase();
             
-            while (sc.hasNext()) {
-                String cmd = sc.nextLine();
-                CommandParser parsedCmd = new CommandParser(cmd);
-                String operation = parsedCmd.getOperation().toLowerCase();
-                String value = parsedCmd.getValue();
-                
-                String output;
-                String tail;
-                
-                switch (operation) {
-                    case "add": // add a key to name space
+            // operated value
+            String value = parsedCmd.getValue();
+            String key = value.split("<SEP>")[0];
+            
+            int hVal = hT.h(key, hT.getSize());
+            int index = hT.searchKey(key, hVal);
+           
+            switch (operation) {
+                case "add": // add a key to name space
+                    
+                    if (index == -1) {
                         
-                        if (hT.add(value)) {
-                            output = "|" + value + "| ";
-                            tail = "has been added to the Name database.";
-                            System.out.println(output + tail);
-                        } 
-                        else {
-                            output = "|" + value + "| ";
-                            tail = "duplicates a record ";
-                            tail += "already in the Name database.";
-                            System.out.println(output + tail);
+                        Handle handle =  memPool.insert(value.getBytes());
+                        
+                        hT.add(handle, value, hVal);
+                    }
+                    else {
+                        // I have to do this to avoid
+                        // style deduction
+                        String output = "|" + value + "| ";
+                        output += "duplicates a record ";
+                        output += "already in the Name database.";
+                        System.out.println(output);
+                    }
+                    
+                    break;
+                    
+                case "delete": // delete a key from name space
+                    
+                    if (index == -1) {
+                        String output = "|" + value + "| not deleted ";
+                        output += "because it does not ";
+                        output += "exist in the Name database.";
+                        System.out.println(output);
+                    } 
+                    else {
+                        Handle handle = hT.delete(value, index);
+                        memPool.freeMem(handle);
+                    }
+                    
+                    break;
+                    
+                case "update": // update a key
+                    
+                    if (index == -1) {
+                        
+                        String output = "|" + key + "| not updated";
+                        output += " because it does not ";
+                        output += "exist in the Name database.";
+                        System.out.println(output);
+                        
+                    } 
+                    else {
+                        String subOpe = parsedCmd.getUpdateOperation();
+                        Handle handle = hT.getHandle(index);
+                        String record = memPool.read(handle);
+                        
+                        String[] fields = value.split("<SEP>");
+                        String fieldName = fields[1].trim();
+                        
+                        String[] existFields = record.split("<SEP>");
+                        int existIndex = -1;
+                        
+                        for (int i = 1; i < existFields.length; i++) {
+                            if (i % 2 == 1 && 
+                                existFields[i].equals(fieldName)) {
+                                
+                                existIndex = i;
+                                break;
+                            }
                         }
-                        break;
                         
-                    case "delete": // delete a key from name space
-                        
-                        if (hT.delete(value)) {
-                            output = "|" + value + "| ";
-                            tail = "has been deleted from the Name database.";
-                            System.out.println(output + tail);
-                        } 
-                        else {
-                            output = "|" + value + "| not deleted";
-                            tail = " because it does not exist ";
-                            tail += "in the Name database.";
-                            System.out.println(output + tail);
+                        if (subOpe.equals("add")) {
+                            String fieldValue = fields[2].trim();
+                            String newRecord = existFields[0];
+                            
+                            for (int i = 1; i < existFields.length; i++) {
+                                if (existIndex == -1 ||
+                                    (i != existIndex 
+                                     && i != existIndex + 1)) {
+                                    
+                                    newRecord += "<SEP>" + existFields[i];
+                                }
+                            }
+                            
+                            newRecord += "<SEP>" + fieldName;
+                            newRecord += "<SEP>" + fieldValue;
+                            
+                            Handle newH = memPool.update(newRecord, handle);
+                            hT.setHandle(index, newH);
+                            
+                            String output = "Updated Record: |";
+                            output += newRecord + "|";
+                            System.out.println(output);
                         }
-                        break;
+                        else {
+                            if (existIndex == -1) {
+                                String output = "|" + key + "| ";
+                                output += "not updated ";
+                                output += "because the field |";
+                                output += fieldName;
+                                output += "| does not exist";
+                                
+                                System.out.println(output);
+                            }
+                            else {
+                                String newRecord = existFields[0];
                         
-                    case "update": // update a key
-                        
-                        String updateOperation = parsedCmd.getUpdateOperation();
-                        output = hT.update(updateOperation, value) + "\n";
-                        System.out.print(output);
-                        break;
-                        
-                    case "print":
-                        hT.print(value);
-                        break;
-                    default:
-//                        System.out.println("empty Command!");
-                }
+                                for (int i = 1; i < existFields.length; i++) {
+                                    if (i != existIndex 
+                                        && i != existIndex + 1) {
+                                        newRecord += "<SEP>";
+                                        newRecord += existFields[i];
+                                    }
+                                }
+                                
+                                Handle newH = memPool.update(newRecord, handle);
+                                hT.setHandle(index, newH);
+                                
+                                String output = "Updated Record: |";
+                                output += newRecord + "|";
+                                System.out.println(output);
+                            }
+                        }
+                    }
+                    break;
+                case "print":
+                    
+                    if (value.equals("hashtable")) {
+                        // print hash table
+                        hT.print();
+                    } 
+                    else {
+                        // print memory pool
+                        memPool.print();
+                    }
+                    
+                    break;
+                default:
+                    //  ignore empty lines
             }
-//            fw.close();
-            sc.close();
-        } 
-        catch (IOException e) {
-            // Handle File not found exception
-            System.out.println("file not founded!");
         }
+//        fw.close();
+        sc.close();
     }
 
 }

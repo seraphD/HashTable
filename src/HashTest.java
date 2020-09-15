@@ -1,3 +1,6 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import student.TestCase;
 
 
@@ -13,32 +16,33 @@ public class HashTest extends TestCase {
     public void setUp() {
         // Nothing needed
     }
+
+    /**
+     * Read contents of a file into a string
+     * 
+     * @param path
+     *            File name
+     * @return the string
+     * @throws IOException
+     */
+    static String readFile(String path) throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded);
+    }
     
     /**
      * @throws Exception
      */
-    public void testHashUpdateAdd() throws Exception {
-        Hash h = new Hash(10);
-        String output;
-        String ans;
+    public void testAdd() throws Exception {
+        String[] args = new String[3];
+        args[0] = "32";
+        args[1] = "10";
+        args[2] = "src/testAdd.txt";
         
-        h.add("Death Note");
-        output = h.update("add", "Death Note<SEP>Genre<SEP>Anime");
-        ans = "Updated Record: |Death Note<SEP>Genre<SEP>Anime|";
-        assertEquals(ans, output);
-//        restoreStreams();
+        MemMan.main(args);
         
-        output = h.update("add", "Death Note<SEP>Genre<SEP>Format");
-        ans = "Updated Record: |Death Note<SEP>Anime<SEP>Genre<SEP>Format|";
-        assertEquals(ans, output);
-        
-        output = h.update("add", "Death Note<SEP>Anime<SEP>Series");
-        ans = "Updated Record: ";
-        ans += "|Death Note<SEP>Genre<SEP>Format<SEP>Anime<SEP>Series|";
-        assertEquals(ans, output);
-        
-        boolean flag = h.delete("Death Note");
-        boolean deleteAns = true;
-        assertEquals(flag, deleteAns);
+        assertFuzzyEquals(
+            readFile("src/addOutput.txt"), 
+            systemOut().getHistory());
     }
 }

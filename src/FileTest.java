@@ -48,7 +48,7 @@ public class FileTest extends TestCase {
         args[2] = "src/Project1_sampleInput.txt";
         MemMan.main(args);
         assertFuzzyEquals(
-            readFile("src/Project1_sampleOutputAns.txt"), 
+            readFile("src/Project1_sampleOutput.txt"), 
             systemOut().getHistory());
     }
 }

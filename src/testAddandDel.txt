@@ -1,4 +1,0 @@
-add 1
-add    111
-add 		1111
-print hashtable
