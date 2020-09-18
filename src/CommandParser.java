@@ -1,8 +1,3 @@
-/**
- * 
- */
-//package MemoryStorage;
-
 import java.util.Scanner;
 
 /**

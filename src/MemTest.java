@@ -34,7 +34,7 @@ public class MemTest extends TestCase {
      *
      * @throws Exception
      */
-    public void testSampleInputFile() throws Exception {
+    public void testMemManage() throws Exception {
         String[] args = new String[3];
         args[0] = "8";
         args[1] = "10";

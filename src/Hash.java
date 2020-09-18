@@ -183,7 +183,7 @@ public class Hash {
                 System.out.println("|" + array[i].getKey() + "| " + i);
             }
         }
-        
+        	
         // print total records
         System.out.println("Total records: " + records);
     }
@@ -259,8 +259,9 @@ class HashEntry {
     private String key;
     /**  if isActive == none 
      *   the position is a deleted element
+     *   thus a tomb stone
      */
-    public boolean active;
+    private boolean active;
     
     /**
      * @return key of this element
@@ -315,4 +316,6 @@ class HashEntry {
     public void setActive(boolean active) {
         this.active = active;
     }
+    
+    
 }

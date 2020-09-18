@@ -328,13 +328,13 @@ public class MemPool {
                     output += " " + p.getAddr();
                     p = p.getNext();
                 }
-                output += " ";
+                output += "\n";
             }
         }
         
         
         if (!output.equals("")) {
-            System.out.println(output);
+            System.out.print(output);
         }
         else {
             System.out.println("No free blocks are available.");
