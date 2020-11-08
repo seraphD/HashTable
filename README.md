@@ -36,4 +36,6 @@ print free blocks in memory pool.
 
 Hash function: sfold.
 
+Probe function: quadratic.
+
 Memory management: buddy system.
