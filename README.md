@@ -16,11 +16,11 @@ delete {name}
 
 Delete a record from pool. Note that this command will delete the record in hash table and memory pool.
 
-update add {name}<SEP>{field_name}<SEP>{field_value}
+update add {name}\<SEP>{field_name}\<SEP>{field_value}
   
 Each record can have multiple pairs of field name and field value. If there is a record key, it can be updated to key<SEP>f_key<SEP>f_value.
   
-update delete {name}<SEP>{field_name}
+update delete {name}\<SEP>{field_name}
 
 This command is similar with the previous one.
 
