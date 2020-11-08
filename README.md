@@ -36,6 +36,24 @@ print free blocks in memory pool.
 
 Hash function: sfold.
 
-Probe function: quadratic.
+Confict solving function: quadratic.
 
-Memory management: buddy system.
+Memory management: buddy method.
+
+## Class
+
+### CommandParser
+
+Used to parse command lines from files. Note that this class will transform command lines to regular form, including removing extra blanks and making words into Canonical form.
+
+### MemPool
+
+Maintaining a continues memory block. The size will be a power of 2. Using a chain list to store free blocks in pool
+
+### Handle
+
+A ref of a record in the memory pool
+
+### Hash
+
+Hash table. Whenever add or delete or update a record, the system will first check is there is a duplicate in hash table.
